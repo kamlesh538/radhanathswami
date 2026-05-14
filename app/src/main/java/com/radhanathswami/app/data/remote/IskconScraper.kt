@@ -25,9 +25,9 @@ class IskconScraper @Inject constructor(
         val ROOT_CATEGORIES = listOf(
             "Year wise" to "00_-_Year_wise",
             "Theme wise" to "01_-_Theme_wise",
-            "Yatra" to "Yatra",
+            "Yatra" to "02_-_Yatra",
             "Short Clips" to "Short_Clips",
-            "Amrit Droplets" to "Amrit_Droplets",
+            "Amrit Droplets" to "05_-_Amrit_Droplets",
             "The Journey Home" to "The_Journey_Home-Audio_Book",
             "Ramayana" to "Ramayana",
             "Hindi Translation" to "Hindi_Translation"
@@ -55,11 +55,6 @@ class IskconScraper @Inject constructor(
             val url = buildUrl(directoryPath)
             val doc = fetchDocument(url)
             val items = mutableListOf<BrowseItem>()
-
-            // Each row in the file listing has an anchor with href containing index.php?q=f or a direct file link
-            val rows = doc.select("table tr, div.file-item, a[href]")
-
-            // Parse all anchor tags
             val anchors = doc.select("a[href]")
             for (anchor in anchors) {
                 val href = anchor.attr("href")
@@ -73,15 +68,10 @@ class IskconScraper @Inject constructor(
                         val encodedPath = href.substringAfter("f=")
                         val decodedPath = URLDecoder.decode(encodedPath, "UTF-8")
 
-                        // Skip navigation links (parent directory, home)
-                        if (decodedPath == "/" ||
-                            !decodedPath.startsWith("/02_-_ISKCON_Swamis") ||
-                            decodedPath == directoryPath
-                        ) continue
-
-                        // Only include direct children
-                        val relativePath = decodedPath.removePrefix(directoryPath)
-                        if (relativePath.isBlank() || relativePath.count { it == '/' } > 1) continue
+                        // Only include direct children of the current directory
+                        if (!decodedPath.startsWith("$directoryPath/")) continue
+                        val relativePath = decodedPath.removePrefix("$directoryPath/")
+                        if (relativePath.isBlank() || relativePath.contains("/")) continue
 
                         val countText = anchor.parent()?.text() ?: ""
                         val count = extractItemCount(countText)
@@ -139,9 +129,9 @@ class IskconScraper @Inject constructor(
             if (href.contains("index.php?q=f&f=")) {
                 val encoded = href.substringAfter("f=")
                 val decoded = URLDecoder.decode(encoded, "UTF-8")
-                if (decoded == currentPath || !decoded.startsWith(currentPath)) continue
-                val rel = decoded.removePrefix(currentPath)
-                if (rel.isBlank() || rel.count { it == '/' } > 1) continue
+                if (!decoded.startsWith("$currentPath/")) continue
+                val rel = decoded.removePrefix("$currentPath/")
+                if (rel.isBlank() || rel.contains("/")) continue
                 items.add(BrowseItem.Folder(cleanFolderName(text), decoded, 0))
             } else if (href.endsWith(".mp3", ignoreCase = true)) {
                 val audioUrl = if (href.startsWith("http")) href else "$BASE_URL$href"

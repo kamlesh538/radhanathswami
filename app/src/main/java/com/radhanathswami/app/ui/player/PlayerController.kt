@@ -233,7 +233,10 @@ class PlayerController @Inject constructor(
         val audio = _playerState.value.currentAudio ?: return
         val pos = controller?.currentPosition ?: _playerState.value.currentPositionMs
         val dur = controller?.duration?.takeIf { it > 0 } ?: _playerState.value.durationMs
-        prefs.edit().putLong(PREF_POSITION, pos).apply()
+        prefs.edit()
+            .putLong(PREF_POSITION, pos)
+            .putLong(PREF_DURATION, dur)
+            .apply()
         scope.launch {
             historyDao.updateProgress(audio.id, pos, dur, System.currentTimeMillis())
         }
@@ -272,7 +275,8 @@ class PlayerController @Inject constructor(
         _playerState.value = _playerState.value.copy(
             currentAudio = audio,
             isPlaying = false,
-            currentPositionMs = positionMs
+            currentPositionMs = positionMs,
+            durationMs = prefs.getLong(PREF_DURATION, 0L)
         )
     }
 
@@ -296,5 +300,6 @@ class PlayerController @Inject constructor(
         private const val PREF_AUDIO_DATE = "last_audio_date"
         private const val PREF_AUDIO_LOCAL_PATH = "last_audio_local_path"
         private const val PREF_POSITION = "last_position_ms"
+        private const val PREF_DURATION = "last_duration_ms"
     }
 }
