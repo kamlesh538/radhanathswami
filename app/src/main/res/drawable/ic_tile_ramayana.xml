@@ -1,0 +1,23 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Bow -->
+    <path
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="3"
+        android:pathData="M30,30 Q10,60 30,90" />
+    <!-- Arrow -->
+    <path
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="2"
+        android:pathData="M20,60 h70" />
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M90,60 l-10,-5 v10 z" />
+    <!-- Spiritual Sun -->
+    <path
+        android:fillColor="#FFCC80"
+        android:pathData="M90,30 c10,0 20,10 20,20 s-10,20 -20,20 s-20,-10 -20,-20 s10,-20 20,-20z" />
+</vector>

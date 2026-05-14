@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Pot of Nectar -->
+    <path
+        android:fillColor="#FFB74D"
+        android:pathData="M40,60 Q40,40 60,40 T80,60 Q80,90 60,90 T40,60" />
+    <path
+        android:fillColor="#FFA726"
+        android:pathData="M45,60 Q45,50 60,50 T75,60 Q75,80 60,80 T45,60" />
+    <!-- Drip -->
+    <path
+        android:fillColor="#64B5F6"
+        android:pathData="M60,95 Q55,105 60,110 T65,105 Q65,95 60,95" />
+    <!-- Peacock feather -->
+    <path
+        android:fillColor="#1B5E20"
+        android:pathData="M60,10 c10,0 20,20 0,40 c-20,-20 -10,-40 0,-40" />
+</vector>

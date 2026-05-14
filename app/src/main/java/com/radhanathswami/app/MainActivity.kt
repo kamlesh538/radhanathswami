@@ -8,11 +8,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.core.content.ContextCompat
 import com.radhanathswami.app.ui.navigation.AppNavigation
 import com.radhanathswami.app.ui.player.PlayerController
@@ -48,11 +53,21 @@ class MainActivity : ComponentActivity() {
                     playerController.connect()
                     onDispose { playerController.disconnect() }
                 }
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    AppNavigation(playerController = playerController)
+                Box(modifier = Modifier.fillMaxSize()) {
+                    // Global background image at low opacity
+                    Image(
+                        painter = painterResource(R.drawable.background),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        alpha = 0.12f
+                    )
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = Color.Transparent
+                    ) {
+                        AppNavigation(playerController = playerController)
+                    }
                 }
             }
         }

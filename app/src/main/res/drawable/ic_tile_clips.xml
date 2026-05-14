@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Play button shape -->
+    <path
+        android:fillColor="#D06000"
+        android:pathData="M40,30 L90,60 L40,90 Z" />
+    <!-- Krishna flute decoration around -->
+    <path
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="2"
+        android:pathData="M20,60 Q30,20 60,20 T100,60" />
+    <path
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="2"
+        android:pathData="M20,60 Q30,100 60,100 T100,60" />
+</vector>

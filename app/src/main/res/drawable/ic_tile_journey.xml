@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Path / Road -->
+    <path
+        android:fillColor="#795548"
+        android:pathData="M20,110 L100,110 L80,60 L40,60 Z" />
+    <!-- Book -->
+    <path
+        android:fillColor="#FFF8F0"
+        android:pathData="M40,30 h40 v30 h-40 Z" />
+    <path
+        android:fillColor="#D06000"
+        android:pathData="M38,30 v30 h4 v-30 Z" />
+    <!-- Small Krishna silhouette or flute -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M50,45 h20 v2 h-20 Z" />
+</vector>

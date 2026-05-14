@@ -1,0 +1,23 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Lotus base -->
+    <path
+        android:fillColor="#F48FB1"
+        android:pathData="M60,100c-20,0 -40,-20 -40,-40s20,-40 40,-40s40,20 40,40s-20,40 -40,40z" />
+    <path
+        android:fillColor="#F06292"
+        android:pathData="M60,90c-15,0 -30,-15 -30,-30s15,-30 30,-30s30,15 30,30s-15,30 -30,30z" />
+    <!-- Flute -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M30,55h60v5h-60z" />
+    <!-- Dots for theme using paths -->
+    <path android:fillColor="#3E1C00" android:pathData="M40,56.5a1,1 0 1,0 0.001,0z" />
+    <path android:fillColor="#3E1C00" android:pathData="M50,56.5a1,1 0 1,0 0.001,0z" />
+    <path android:fillColor="#3E1C00" android:pathData="M60,56.5a1,1 0 1,0 0.001,0z" />
+    <path android:fillColor="#3E1C00" android:pathData="M70,56.5a1,1 0 1,0 0.001,0z" />
+    <path android:fillColor="#3E1C00" android:pathData="M80,56.5a1,1 0 1,0 0.001,0z" />
+</vector>

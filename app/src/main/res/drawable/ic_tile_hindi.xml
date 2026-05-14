@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Letter 'अ' representation -->
+    <path
+        android:fillColor="#D06000"
+        android:pathData="M40,30 h40 v5 h-40 Z" />
+    <path
+        android:fillColor="#D06000"
+        android:pathData="M55,35 v40 M45,45 Q35,45 35,55 T45,65 Q35,65 35,75 T45,85"
+        android:strokeColor="#D06000"
+        android:strokeWidth="2"/>
+    <!-- Lotus petal -->
+    <path
+        android:fillColor="#F48FB1"
+        android:pathData="M90,80 Q100,60 90,40 Q80,60 90,80" />
+</vector>

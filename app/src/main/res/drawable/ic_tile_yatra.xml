@@ -1,0 +1,24 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Mountain / Pilgrimage -->
+    <path
+        android:fillColor="#BDBDBD"
+        android:pathData="M20,100 L60,30 L100,100 Z" />
+    <path
+        android:fillColor="#E0E0E0"
+        android:pathData="M40,100 L60,65 L80,100 Z" />
+    <!-- Temple on top -->
+    <path
+        android:fillColor="#D06000"
+        android:pathData="M55,30 h10 v-10 h-10 Z" />
+    <path
+        android:fillColor="#FF8C00"
+        android:pathData="M50,40 h20 v-10 h-20 Z" />
+    <!-- Flag -->
+    <path
+        android:fillColor="#F44336"
+        android:pathData="M65,15 l10,5 l-10,5 Z" />
+</vector>

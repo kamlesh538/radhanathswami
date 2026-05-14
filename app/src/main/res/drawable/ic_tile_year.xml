@@ -1,0 +1,27 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Calendar background -->
+    <path
+        android:fillColor="#FFCC80"
+        android:pathData="M20,30h80v70h-80z" />
+    <path
+        android:fillColor="#D06000"
+        android:pathData="M20,30h80v15h-80z" />
+    <!-- Krishna's Peacock Feather -->
+    <path
+        android:fillColor="#1565C0"
+        android:pathData="M60,10c5,0 10,10 10,20s-5,15 -10,15s-10,-5 -10,-15s5,-20 10,-20z" />
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M60,15c3,0 6,7 6,15s-3,12 -6,12s-6,-4 -6,-12s3,-15 6,-15z" />
+    <path
+        android:fillColor="#FFEB3B"
+        android:pathData="M60,20c1,0 2,4 2,10s-1,8 -2,8s-2,-2 -2,-8s1,-10 2,-10z" />
+    <!-- Year digits (simple shapes representing 2024 or similar) -->
+    <path
+        android:fillColor="#3E1C00"
+        android:pathData="M40,60h10v5h-10z M60,60h10v5h-10z M40,80h10v5h-10z M60,80h10v5h-10z" />
+</vector>
