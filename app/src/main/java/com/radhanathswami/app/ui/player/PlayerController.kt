@@ -90,7 +90,11 @@ class PlayerController @Inject constructor(
             newPosition: Player.PositionInfo,
             reason: Int
         ) {
-            _playerState.value = _playerState.value.copy(currentPositionMs = newPosition.positionMs)
+            // Only update while playing; paused seeks go through seekTo() which updates state directly.
+            // Ignoring here prevents the async setMediaItem reset from wiping the restored position.
+            if (_playerState.value.isPlaying) {
+                _playerState.value = _playerState.value.copy(currentPositionMs = newPosition.positionMs)
+            }
         }
     }
 
