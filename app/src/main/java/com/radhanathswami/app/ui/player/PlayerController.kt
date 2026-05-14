@@ -51,7 +51,12 @@ class PlayerController @Inject constructor(
 
     private val playerListener = object : Player.Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
-            _playerState.value = _playerState.value.copy(isPlaying = isPlaying)
+            val wantsToPlay = controller?.playWhenReady ?: false
+            _playerState.value = _playerState.value.copy(
+                isPlaying = isPlaying,
+                // buffering: wants to play but not playing yet
+                isLoading = !isPlaying && wantsToPlay
+            )
             if (isPlaying) {
                 startPositionUpdates()
             } else {
@@ -61,9 +66,11 @@ class PlayerController @Inject constructor(
         }
 
         override fun onPlaybackStateChanged(playbackState: Int) {
-            val isLoading = playbackState == Player.STATE_BUFFERING
+            // Only update duration here; isLoading is driven by onIsPlayingChanged + play()
             val durationMs = controller?.duration?.takeIf { it > 0 } ?: 0L
-            _playerState.value = _playerState.value.copy(isLoading = isLoading, durationMs = durationMs)
+            if (durationMs > 0) {
+                _playerState.value = _playerState.value.copy(durationMs = durationMs)
+            }
             if (playbackState == Player.STATE_READY && durationMs > 0) {
                 _playerState.value.currentAudio?.let { audio ->
                     scope.launch {
@@ -124,7 +131,8 @@ class PlayerController @Inject constructor(
         }
         _playerState.value = _playerState.value.copy(
             currentAudio = audio,
-            isPlaying = true,
+            isPlaying = false,
+            isLoading = true,
             currentPositionMs = 0L
         )
         saveAudioToPrefs(audio, 0L)
@@ -162,7 +170,8 @@ class PlayerController @Inject constructor(
         }
         _playerState.value = _playerState.value.copy(
             currentAudio = audio,
-            isPlaying = true,
+            isPlaying = false,
+            isLoading = true,
             currentPositionMs = positionMs
         )
         saveAudioToPrefs(audio, positionMs)
@@ -184,7 +193,8 @@ class PlayerController @Inject constructor(
 
     fun playPause() {
         val c = controller ?: return
-        if (c.isPlaying) c.pause() else c.play()
+        // Use playWhenReady so pause works correctly even during buffering
+        if (c.playWhenReady) c.pause() else c.play()
     }
 
     fun seekTo(positionMs: Long) {
