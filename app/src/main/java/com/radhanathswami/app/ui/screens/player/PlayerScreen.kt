@@ -15,7 +15,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.radhanathswami.app.ui.player.PlayerController
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,15 +26,10 @@ fun PlayerScreen(
     var sliderPosition by remember { mutableFloatStateOf(0f) }
     var isUserSeeking by remember { mutableStateOf(false) }
 
-    // Poll position every second while playing
-    LaunchedEffect(playerState.isPlaying) {
-        while (playerState.isPlaying) {
-            if (!isUserSeeking) {
-                val pos = playerController.getCurrentPosition()
-                val dur = playerController.getDuration()
-                if (dur > 0) sliderPosition = pos.toFloat() / dur.toFloat()
-            }
-            delay(1000)
+    // Sync slider from state whenever position/duration changes (covers paused restore + live playback)
+    LaunchedEffect(playerState.currentPositionMs, playerState.durationMs) {
+        if (!isUserSeeking && playerState.durationMs > 0) {
+            sliderPosition = playerState.currentPositionMs.toFloat() / playerState.durationMs.toFloat()
         }
     }
 
