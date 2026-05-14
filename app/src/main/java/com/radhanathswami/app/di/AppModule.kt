@@ -1,12 +1,14 @@
 package com.radhanathswami.app.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.room.Room
 import com.radhanathswami.app.data.local.AppDatabase
 import com.radhanathswami.app.data.local.DownloadDao
+import com.radhanathswami.app.data.local.HistoryDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,11 +33,22 @@ object AppModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(context, AppDatabase::class.java, "radhanath_swami.db").build()
+        Room.databaseBuilder(context, AppDatabase::class.java, "radhanath_swami.db")
+            .addMigrations(AppDatabase.MIGRATION_1_2)
+            .build()
 
     @Provides
     @Singleton
     fun provideDownloadDao(db: AppDatabase): DownloadDao = db.downloadDao()
+
+    @Provides
+    @Singleton
+    fun provideHistoryDao(db: AppDatabase): HistoryDao = db.historyDao()
+
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
+        context.getSharedPreferences("player_prefs", Context.MODE_PRIVATE)
 
     @Provides
     @Singleton

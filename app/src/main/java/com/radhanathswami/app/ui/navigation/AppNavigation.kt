@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,6 +18,7 @@ import com.radhanathswami.app.ui.components.MiniPlayer
 import com.radhanathswami.app.ui.player.PlayerController
 import com.radhanathswami.app.ui.screens.categories.CategoryScreen
 import com.radhanathswami.app.ui.screens.downloads.DownloadsScreen
+import com.radhanathswami.app.ui.screens.history.HistoryScreen
 import com.radhanathswami.app.ui.screens.home.HomeScreen
 import com.radhanathswami.app.ui.screens.player.PlayerScreen
 import java.net.URLDecoder
@@ -25,6 +27,7 @@ import java.net.URLEncoder
 sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Downloads : Screen("downloads")
+    object History : Screen("history")
     object Category : Screen("category/{path}/{name}") {
         fun createRoute(path: String, name: String): String {
             val encodedPath = URLEncoder.encode(path, "UTF-8")
@@ -76,6 +79,16 @@ fun AppNavigation(playerController: PlayerController) {
                         icon = { Icon(Icons.Default.Download, contentDescription = "Downloads") },
                         label = { Text("Downloads") }
                     )
+                    NavigationBarItem(
+                        selected = currentRoute == Screen.History.route,
+                        onClick = {
+                            navController.navigate(Screen.History.route) {
+                                popUpTo(Screen.Home.route)
+                            }
+                        },
+                        icon = { Icon(Icons.Default.History, contentDescription = "History") },
+                        label = { Text("History") }
+                    )
                 }
             }
         }
@@ -97,6 +110,10 @@ fun AppNavigation(playerController: PlayerController) {
 
             composable(Screen.Downloads.route) {
                 DownloadsScreen(playerController = playerController)
+            }
+
+            composable(Screen.History.route) {
+                HistoryScreen(playerController = playerController)
             }
 
             composable(
