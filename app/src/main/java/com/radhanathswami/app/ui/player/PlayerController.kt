@@ -31,7 +31,9 @@ data class PlayerState(
     val isPlaying: Boolean = false,
     val currentPositionMs: Long = 0L,
     val durationMs: Long = 0L,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val currentPlaylistId: String? = null,
+    val currentPlaylistName: String? = null
 )
 
 @Singleton
@@ -48,8 +50,12 @@ class PlayerController @Inject constructor(
 
     private var queue: List<AudioItem> = emptyList()
 
-    fun setQueue(items: List<AudioItem>) {
+    fun setQueue(items: List<AudioItem>, playlistId: String? = null, playlistName: String? = null) {
         queue = items
+        _playerState.value = _playerState.value.copy(
+            currentPlaylistId = playlistId,
+            currentPlaylistName = playlistName
+        )
     }
 
     private var controllerFuture: ListenableFuture<MediaController>? = null

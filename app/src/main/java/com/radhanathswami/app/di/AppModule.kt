@@ -9,6 +9,7 @@ import androidx.room.Room
 import com.radhanathswami.app.data.local.AppDatabase
 import com.radhanathswami.app.data.local.DownloadDao
 import com.radhanathswami.app.data.local.HistoryDao
+import com.radhanathswami.app.data.local.PlaylistDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,7 +35,7 @@ object AppModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "radhanath_swami.db")
-            .addMigrations(AppDatabase.MIGRATION_1_2)
+            .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3)
             .build()
 
     @Provides
@@ -44,6 +45,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideHistoryDao(db: AppDatabase): HistoryDao = db.historyDao()
+
+    @Provides
+    @Singleton
+    fun providePlaylistDao(db: AppDatabase): PlaylistDao = db.playlistDao()
 
     @Provides
     @Singleton
