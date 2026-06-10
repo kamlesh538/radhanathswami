@@ -21,6 +21,7 @@ import com.radhanathswami.app.ui.screens.downloads.DownloadsScreen
 import com.radhanathswami.app.ui.screens.history.HistoryScreen
 import com.radhanathswami.app.ui.screens.home.HomeScreen
 import com.radhanathswami.app.ui.screens.player.PlayerScreen
+import com.radhanathswami.app.data.model.AudioItem
 import java.net.URLDecoder
 import java.net.URLEncoder
 
@@ -47,13 +48,18 @@ fun AppNavigation(playerController: PlayerController) {
 
     val isPlayerScreen = currentRoute == Screen.Player.route
 
+    val onOpenFolder: (() -> Unit)? = playerState.currentAudio
+        ?.let { audio -> audioFolderRoute(audio) }
+        ?.let { (path, name) -> { navController.navigate(Screen.Category.createRoute(path, name)) } }
+
     Scaffold(
         bottomBar = {
             Column {
                 if (playerState.currentAudio != null && !isPlayerScreen) {
                     MiniPlayer(
                         playerController = playerController,
-                        onExpand = { navController.navigate(Screen.Player.route) }
+                        onExpand = { navController.navigate(Screen.Player.route) },
+                        onOpenFolder = onOpenFolder
                     )
                 }
                 NavigationBar(
@@ -142,9 +148,23 @@ fun AppNavigation(playerController: PlayerController) {
             composable(Screen.Player.route) {
                 PlayerScreen(
                     onNavigateBack = { navController.popBackStack() },
-                    playerController = playerController
+                    playerController = playerController,
+                    onOpenFolder = onOpenFolder
                 )
             }
         }
     }
+}
+
+private const val AUDIO_BASE_URL = "https://audio.iskcondesiretree.com"
+
+private fun audioFolderRoute(audio: AudioItem): Pair<String, String>? {
+    val folderName = audio.category.ifBlank { return null }
+    val folderPath = if (audio.url.startsWith(AUDIO_BASE_URL)) {
+        // Keep the leading slash — browseDirectory expects paths like /02_-_.../2022
+        audio.url.removePrefix(AUDIO_BASE_URL).substringBeforeLast("/")
+    } else {
+        folderName
+    }
+    return if (folderPath.isBlank()) null else Pair(folderPath, folderName.replace("_", " "))
 }

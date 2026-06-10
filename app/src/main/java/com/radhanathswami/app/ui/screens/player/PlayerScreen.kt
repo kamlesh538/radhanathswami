@@ -20,7 +20,8 @@ import com.radhanathswami.app.ui.player.PlayerController
 @Composable
 fun PlayerScreen(
     onNavigateBack: () -> Unit,
-    playerController: PlayerController
+    playerController: PlayerController,
+    onOpenFolder: (() -> Unit)? = null
 ) {
     val playerState by playerController.playerState.collectAsState()
     var sliderPosition by remember { mutableFloatStateOf(0f) }
@@ -42,6 +43,13 @@ fun PlayerScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Minimize")
+                    }
+                },
+                actions = {
+                    if (onOpenFolder != null) {
+                        IconButton(onClick = onOpenFolder) {
+                            Icon(Icons.Default.Folder, contentDescription = "Open folder")
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

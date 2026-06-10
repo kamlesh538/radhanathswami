@@ -3,6 +3,7 @@ package com.radhanathswami.app.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
@@ -19,7 +20,8 @@ import com.radhanathswami.app.ui.player.PlayerController
 @Composable
 fun MiniPlayer(
     playerController: PlayerController,
-    onExpand: () -> Unit
+    onExpand: () -> Unit,
+    onOpenFolder: (() -> Unit)? = null
 ) {
     val playerState by playerController.playerState.collectAsState()
     val audio = playerState.currentAudio ?: return
@@ -66,23 +68,39 @@ fun MiniPlayer(
                     )
                 }
 
-                if (playerState.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .size(28.dp),
-                        strokeWidth = 2.5.dp,
-                        strokeCap = StrokeCap.Round,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                } else {
-                    IconButton(onClick = { playerController.playPause() }) {
-                        Icon(
-                            imageVector = if (playerState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            contentDescription = if (playerState.isPlaying) "Pause" else "Play",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(32.dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(0.dp)
+                ) {
+                    if (playerState.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .size(28.dp),
+                            strokeWidth = 2.5.dp,
+                            strokeCap = StrokeCap.Round,
+                            color = MaterialTheme.colorScheme.primary
                         )
+                    } else {
+                        IconButton(onClick = { playerController.playPause() }) {
+                            Icon(
+                                imageVector = if (playerState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                contentDescription = if (playerState.isPlaying) "Pause" else "Play",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    }
+
+                    if (onOpenFolder != null) {
+                        IconButton(onClick = onOpenFolder) {
+                            Icon(
+                                Icons.Default.Folder,
+                                contentDescription = "Open folder",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
             }
