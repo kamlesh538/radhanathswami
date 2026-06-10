@@ -11,9 +11,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.radhanathswami.app.data.local.HistoryEntity
 import com.radhanathswami.app.data.model.AudioItem
 import com.radhanathswami.app.data.model.BrowseItem
 import com.radhanathswami.app.ui.player.PlayerController
@@ -32,6 +34,7 @@ fun CategoryScreen(
     val uiState by viewModel.uiState.collectAsState()
     val downloadingIds by viewModel.downloadingIds.collectAsState()
     val downloadedIds by viewModel.downloadedIds.collectAsState()
+    val historyMap by viewModel.historyMap.collectAsState()
     val playerState by playerController.playerState.collectAsState()
 
     LaunchedEffect(folderPath) {
@@ -121,9 +124,17 @@ fun CategoryScreen(
                                         isPlaying = playerState.currentAudio?.id == item.audioItem.id && playerState.isPlaying,
                                         isDownloading = item.audioItem.id in downloadingIds,
                                         isDownloaded = item.audioItem.id in downloadedIds,
+                                        historyEntity = historyMap[item.audioItem.id],
                                         onPlay = { audio ->
+                                            val history = historyMap[audio.id]
                                             playerController.setQueue(folderAudioItems)
-                                            playerController.play(audio)
+                                            val resumeThreshold = if (history != null && history.durationMs > 0) (history.durationMs * 0.95).toLong() else Long.MAX_VALUE
+                                            if (history != null && history.lastPositionMs > 0 && history.lastPositionMs < resumeThreshold) {
+                                                val audioWithPath = if (history.localPath != null) audio.copy(localPath = history.localPath) else audio
+                                                playerController.playFromPosition(audioWithPath, history.lastPositionMs)
+                                            } else {
+                                                playerController.play(audio)
+                                            }
                                         },
                                         onDownload = { audio ->
                                             viewModel.downloadAudio(audio)
@@ -185,11 +196,16 @@ fun AudioListItem(
     isPlaying: Boolean,
     isDownloading: Boolean,
     isDownloaded: Boolean,
+    historyEntity: HistoryEntity? = null,
     onPlay: (AudioItem) -> Unit,
     onDownload: (AudioItem) -> Unit
 ) {
+    val isHeard = !isPlaying && historyEntity != null && historyEntity.lastPositionMs > 0
+
     ListItem(
-        modifier = Modifier.clickable { onPlay(audio) },
+        modifier = Modifier
+            .clickable { onPlay(audio) }
+            .alpha(if (isHeard) 0.5f else 1f),
         headlineContent = {
             Text(
                 text = audio.title,
@@ -200,13 +216,24 @@ fun AudioListItem(
                 overflow = TextOverflow.Ellipsis
             )
         },
-        supportingContent = {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (audio.date.isNotBlank()) {
-                    Text(audio.date, style = MaterialTheme.typography.bodySmall)
+        supportingContent = if (audio.date.isNotBlank() || isHeard) {
+            {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    if (audio.date.isNotBlank()) {
+                        Text(audio.date, style = MaterialTheme.typography.bodySmall)
+                    }
+                    if (isHeard && historyEntity != null) {
+                        val posText = formatDuration(historyEntity.lastPositionMs)
+                        val durText = if (historyEntity.durationMs > 0) " / ${formatDuration(historyEntity.durationMs)}" else ""
+                        Text(
+                            "Heard: $posText$durText",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
-        },
+        } else null,
         leadingContent = {
             Box(
                 modifier = Modifier.size(40.dp),
@@ -257,4 +284,13 @@ fun AudioListItem(
         modifier = Modifier.padding(horizontal = 16.dp),
         color = MaterialTheme.colorScheme.surfaceVariant
     )
+}
+
+private fun formatDuration(ms: Long): String {
+    val totalSeconds = ms / 1000
+    val hours = totalSeconds / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val seconds = totalSeconds % 60
+    return if (hours > 0) "%d:%02d:%02d".format(hours, minutes, seconds)
+    else "%d:%02d".format(minutes, seconds)
 }
