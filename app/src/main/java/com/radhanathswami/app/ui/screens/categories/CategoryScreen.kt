@@ -104,6 +104,9 @@ fun CategoryScreen(
                             )
                         }
                     } else {
+                        val folderAudioItems = remember(state.items) {
+                            state.items.filterIsInstance<BrowseItem.Audio>().map { it.audioItem }
+                        }
                         LazyColumn(
                             contentPadding = PaddingValues(vertical = 8.dp)
                         ) {
@@ -119,6 +122,7 @@ fun CategoryScreen(
                                         isDownloading = item.audioItem.id in downloadingIds,
                                         isDownloaded = item.audioItem.id in downloadedIds,
                                         onPlay = { audio ->
+                                            playerController.setQueue(folderAudioItems)
                                             playerController.play(audio)
                                         },
                                         onDownload = { audio ->

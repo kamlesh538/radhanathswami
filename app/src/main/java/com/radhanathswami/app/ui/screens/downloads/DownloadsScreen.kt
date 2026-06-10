@@ -71,6 +71,7 @@ fun DownloadsScreen(
                             audio = audio,
                             isPlaying = playerState.currentAudio?.id == audio.id && playerState.isPlaying,
                             onPlay = {
+                                playerController.setQueue(emptyList())
                                 playerController.play(audio, audio.localPath)
                             },
                             onDelete = { viewModel.deleteDownload(audio) }

@@ -46,6 +46,12 @@ class PlayerController @Inject constructor(
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var positionJob: Job? = null
 
+    private var queue: List<AudioItem> = emptyList()
+
+    fun setQueue(items: List<AudioItem>) {
+        queue = items
+    }
+
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private var controller: MediaController? = null
 
@@ -82,6 +88,9 @@ class PlayerController @Inject constructor(
                         )
                     }
                 }
+            }
+            if (playbackState == Player.STATE_ENDED) {
+                playNextInQueue()
             }
         }
 
@@ -292,6 +301,17 @@ class PlayerController @Inject constructor(
             currentPositionMs = positionMs,
             durationMs = prefs.getLong(PREF_DURATION, 0L)
         )
+    }
+
+    private fun playNextInQueue() {
+        val current = _playerState.value.currentAudio ?: return
+        val currentIndex = queue.indexOfFirst { it.id == current.id }
+        if (currentIndex == -1 || currentIndex >= queue.size - 1) {
+            // Last track or not in a folder queue — pause cleanly so no loading spinner lingers
+            controller?.pause()
+            return
+        }
+        play(queue[currentIndex + 1])
     }
 
     private fun saveAudioToPrefs(audio: AudioItem, positionMs: Long) {

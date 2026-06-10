@@ -67,6 +67,7 @@ fun HistoryScreen(
                         date = item.date,
                         localPath = item.localPath
                     )
+                    playerController.setQueue(emptyList())
                     val resumeThreshold = if (item.durationMs > 0) (item.durationMs * 0.95).toLong() else Long.MAX_VALUE
                     if (item.lastPositionMs > 0 && item.lastPositionMs < resumeThreshold) {
                         playerController.playFromPosition(audio, item.lastPositionMs)
