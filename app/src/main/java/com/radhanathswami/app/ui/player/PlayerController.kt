@@ -66,12 +66,15 @@ class PlayerController @Inject constructor(
             val wantsToPlay = controller?.playWhenReady ?: false
             _playerState.value = _playerState.value.copy(
                 isPlaying = isPlaying,
-                // buffering: wants to play but not playing yet
                 isLoading = !isPlaying && wantsToPlay
             )
             if (isPlaying) {
                 startPositionUpdates()
-            } else {
+            } else if (!wantsToPlay) {
+                // Explicitly paused — stop polling and save progress.
+                // Don't stop during buffering (wantsToPlay=true) so the loop
+                // can resolve isLoading when the screen is locked and callbacks
+                // are delayed.
                 stopPositionUpdates()
                 persistProgress()
             }
@@ -154,6 +157,9 @@ class PlayerController @Inject constructor(
             isLoading = true,
             currentPositionMs = 0L
         )
+        // Start polling immediately so background auto-next resolves isLoading
+        // even when onIsPlayingChanged callbacks are delayed (screen locked).
+        startPositionUpdates()
         saveAudioToPrefs(audio, 0L)
         scope.launch {
             historyDao.upsert(
@@ -193,6 +199,7 @@ class PlayerController @Inject constructor(
             isLoading = true,
             currentPositionMs = positionMs
         )
+        startPositionUpdates()
         saveAudioToPrefs(audio, positionMs)
         scope.launch {
             historyDao.upsert(
@@ -238,16 +245,25 @@ class PlayerController @Inject constructor(
         positionJob = scope.launch {
             var saveTickCounter = 0
             while (true) {
-                val pos = controller?.currentPosition ?: 0L
-                val dur = controller?.duration?.takeIf { it > 0 } ?: 0L
+                val c = controller
+            if (c == null) { delay(500); continue }
+                val pos = c.currentPosition
+                val dur = c.duration.takeIf { it > 0 } ?: 0L
+                val isActuallyPlaying = c.isPlaying
+                val wantsToPlay = c.playWhenReady
                 _playerState.value = _playerState.value.copy(
                     currentPositionMs = pos,
-                    durationMs = dur
+                    durationMs = if (dur > 0) dur else _playerState.value.durationMs,
+                    isPlaying = isActuallyPlaying,
+                    isLoading = !isActuallyPlaying && wantsToPlay
                 )
-                if (++saveTickCounter >= 10) {
+                if (isActuallyPlaying && ++saveTickCounter >= 10) {
                     saveTickCounter = 0
                     persistProgress()
                 }
+                // Self-terminate when explicitly paused so we don't poll needlessly.
+                // The loop is restarted by play() or onIsPlayingChanged(true).
+                if (!wantsToPlay) break
                 delay(500)
             }
         }
