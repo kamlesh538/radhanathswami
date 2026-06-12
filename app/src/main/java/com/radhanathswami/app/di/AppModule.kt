@@ -60,7 +60,7 @@ object AppModule {
     fun provideExoPlayer(@ApplicationContext context: Context): ExoPlayer {
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(C.USAGE_MEDIA)
-            .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+            .setContentType(C.AUDIO_CONTENT_TYPE_SPEECH)
             .build()
         return ExoPlayer.Builder(context)
             .setAudioAttributes(audioAttributes, true)
